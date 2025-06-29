@@ -40,7 +40,7 @@ if (ownername === "" || password === "") {
       message.textContent = data.error || "Error occured , please try again later ";
       message.className = 'message error';
       message.classList.remove('hidden');
-    alert(data.error || "Login failed");
+
 }
   }
   catch (error) {

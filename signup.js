@@ -47,7 +47,7 @@ if (shopname === "" || ownername === "" || password === "" || email === "") {
       message.textContent = data.error || "Error occured while creating your account :( ";
       message.className = 'message error';
       message.classList.remove('hidden');
-    alert(data.error || "Signup faliled");
+   
 }
   }
   catch (error) {
