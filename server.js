@@ -308,7 +308,7 @@ app.post('/signup', async (req, res) => {
 // -------------------- Login --------------------
 app.post('/Login', async (req, res) => {
  try {
-    // console.log('Login request:', req.body); // Debug
+    console.log('Login request:', req.body); // Debug
     const user = await User.findOne({ ownername : req.body.ownername });
     if (!user) {
       return res.status(401).json({ error: "invalid ownername or password" });
