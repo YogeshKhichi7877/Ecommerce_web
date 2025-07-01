@@ -308,8 +308,8 @@ app.post('/signup', async (req, res) => {
 // -------------------- Login --------------------
 app.post('/Login', async (req, res) => {
  try {
-    console.log('Login request:', req.body); // Debug
-    const user = await User.findOne({ ownername : req.body.ownername });
+    // console.log('Login request:', req.body); // Debug
+    const user = await User.findOne({ password : req.body.password });
     if (!user) {
       return res.status(401).json({ error: "invalid ownername or password" });
     }
@@ -331,7 +331,7 @@ app.post('/Login', async (req, res) => {
       "Yogesh_7877",
       { expiresIn: '24h' }
     );
-    res.cookie("token", token);
+    // res.cookie("token", token);
    res.status(201).json({ token });
   } catch (err) {
     console.log(err);

@@ -14,13 +14,6 @@ const password = document.querySelector("#password").value;
       localStorage.setItem('token', token);
     }
 
-    function getToken() {
-      return localStorage.getItem('token');
-    }
-
-    function clearToken() {
-      localStorage.removeItem('token');
-    }
 
 if (ownername === "" || password === "") {
 alert("please fill all details");
@@ -38,7 +31,7 @@ alert("please fill all details");
   });
   const data = await response.json(); // If the response is JSON
   if (response.ok && data.token) {
-     setToken(data.token);
+ 
     // Store the JWT token in localStorage
       localStorage.setItem('token', data.token);
       
