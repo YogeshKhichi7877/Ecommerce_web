@@ -11,11 +11,6 @@ document.querySelector('form').addEventListener('submit', async (e) => {
   const ownername = document.querySelector("#ownername").value;
   const password = document.querySelector("#password").value;
   const email = document.querySelector("#email").value; // Add an age input in your HTML
-  // Store token in localStorage
-    function setToken(token) {
-      localStorage.setItem('token', token);
-    }
-
  
 if (shopname === "" || ownername === "" || password === "" || email === "") {
   alert("Please enter your name, email , age, and password");
@@ -35,8 +30,7 @@ if (shopname === "" || ownername === "" || password === "" || email === "") {
     
   });
   const data = await response.json(); // If the response is JSON
-  if (response.ok && data.token) {
-     setToken(data.token);
+  if (response.ok) {
       // Show success message
       const message = document.getElementById('message');
       message.textContent = "Signup Successfull , New account has been created :)";
