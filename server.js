@@ -294,7 +294,7 @@ app.post('/signup', async (req, res) => {
     });
     await user.save();
     // const token = jwt.sign({ shopname, ownername, email }, Private_key);
-    // res.cookie("token", token);
+    
     res.status(201).json(user);
   } catch (err) {
     console.log("Signup Error:", err);
@@ -321,16 +321,15 @@ app.post('/Login', async (req, res) => {
         //  res.send(user);
          console.log("yeeeaah , you loged in :)");
       }
-     
     });
     // Create JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       "Yogesh_7877",
-      { expiresIn: '1h' }
+      { expiresIn: '24h' }
     );
-    res.status(201);
-    res.json({token});
+    res.cookie("token", token);
+   res.status(201).json({ token });
   } catch (err) {
     console.log(err);
     alert(err);
