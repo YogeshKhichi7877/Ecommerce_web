@@ -3,7 +3,11 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
    // Show loading and disable button
   document.getElementById('loading').classList.remove('hidden');
-  document.getElementsByClassName('submit').disabled = true;
+  // Fix: disable all submit buttons
+  const submitButtons = document.getElementsByClassName('submit');
+  for (let btn of submitButtons) {
+    btn.disabled = true;
+  }
   document.getElementById('message').classList.add('hidden');
 
   // your fetch code here
@@ -28,7 +32,10 @@ if (ownername === "" || password === "") {
     document.getElementById('message').className = "message error";
     document.getElementById('message').classList.remove('hidden');
     document.getElementById('loading').classList.add('hidden');
-    document.querySelector('.submit').disabled = false;
+    // Re-enable all submit buttons
+    for (let btn of submitButtons) {
+      btn.disabled = false;
+    }
     return;
 } else {
 
@@ -79,7 +86,9 @@ if (ownername === "" || password === "") {
       message.textContent = data.error || "Error occured , please try again later ";
       message.className = 'message error';
       message.classList.remove('hidden');
-    alert(data.error);
+    if (data.error) {
+      alert(data.error);
+    }
 }
   }
   catch (error) {
@@ -90,9 +99,11 @@ if (ownername === "" || password === "") {
     message.classList.remove('hidden');
     console.log(error);
   } finally {
-    // Hide loading and re-enable button
+    // Hide loading and re-enable all submit buttons
     document.getElementById('loading').classList.add('hidden');
-    document.getElementById('sub').disabled = false;
+    for (let btn of submitButtons) {
+      btn.disabled = false;
+    }
     // Hide message after 3 seconds
     setTimeout(() => {
       document.getElementById('message').classList.add('hidden');
