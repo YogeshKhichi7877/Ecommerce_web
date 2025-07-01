@@ -3,15 +3,28 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
    // Show loading and disable button
   document.getElementById('loading').classList.remove('hidden');
-  document.getElementsByClassName('submit').disabled = true;
   document.getElementById('message').classList.add('hidden');
 
   // your fetch code here
   const ownername = document.querySelector("#ownername").value;
 const password = document.querySelector("#password").value;
 
+    // Store token in localStorage
+    function setToken(token) {
+      localStorage.setItem('token', token);
+    }
+
+    function getToken() {
+      return localStorage.getItem('token');
+    }
+
+    function clearToken() {
+      localStorage.removeItem('token');
+    }
+
 if (ownername === "" || password === "") {
-  alert("Please enter your name and password");
+alert("please fill all details");
+  
 } else {
 
   try {
@@ -24,14 +37,22 @@ if (ownername === "" || password === "") {
     })
   });
   const data = await response.json(); // If the response is JSON
-  if (response.ok) {
+  if (response.ok && data.token) {
+     setToken(data.token);
+    // Store the JWT token in localStorage
+      localStorage.setItem('token', data.token);
+      
+
       // Show success message
       const message = document.getElementById('message');
       message.textContent = "Login successfull :)";
       message.className = 'message success';
       message.classList.remove('hidden');
-  // Login successful, redirect to your main site
-    window.location.href = "ecommerce.html";
+
+     // Redirect to main site after a short delay
+      setTimeout(() => {
+        window.location.href = "ecommerce.html"; // Change to your main site URL if needed
+      }, 1000);
     console.log("login completed");
     document.querySelector('form').reset(); // <-- CHANGE to your main site URL
 } else {
@@ -40,11 +61,13 @@ if (ownername === "" || password === "") {
       message.textContent = data.error || "Error occured , please try again later ";
       message.className = 'message error';
       message.classList.remove('hidden');
-
+      // alert(data.error || data.message );
+      alert(data.token);
 }
   }
   catch (error) {
     // Show error message
+    console.log("error is :" , error);
     const message = document.getElementById('message');
     message.textContent = "An error occurred. Please try again.";
     message.className = 'message error';
@@ -52,7 +75,7 @@ if (ownername === "" || password === "") {
   } finally {
     // Hide loading and re-enable button
     document.getElementById('loading').classList.add('hidden');
-    document.getElementById('sub').disabled = false;
+    // document.getElementById('sub').disabled = false;
     // Hide message after 3 seconds
     setTimeout(() => {
       document.getElementById('message').classList.add('hidden');

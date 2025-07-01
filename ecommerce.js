@@ -8,9 +8,20 @@ document.querySelector('#form').addEventListener('submit', async (e) => {
   const price = document.querySelector("#price").value;
   const stock = document.querySelector("#stock").value;
 
+    // Get JWT token from localStorage
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert("You must be logged in to add a product.");
+    return;
+  }
+ function getToken() {
+    return localStorage.getItem('token');
+  }
   const response = await fetch('https://ecommerce-bomr.onrender.com/products', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' ,
+      'Authorization': `Bearer ${getToken()}`
+     },
     body: JSON.stringify({
       company : company ,
       model : model ,

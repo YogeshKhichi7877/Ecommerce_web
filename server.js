@@ -3,12 +3,13 @@ const app = express();
 const cors = require('cors');
 app.use(cors());
 require('dotenv').config();
+
 const nodemailer = require('nodemailer');
 const { Parser } = require('json2csv');
 const PDFDocument = require('pdfkit');
+
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY );
-
 
 const Products = require('./models/products.js');
 const User = require('./models/user.js');
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(cors());
 
 
-
+// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 const logRequest = (req, res, next) => {
   console.log(`${new Date().toLocaleString()} Request made to: ${req.originalUrl}`);
   next();
@@ -38,12 +39,31 @@ app.use(logRequest);
 
 // wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 
+
+// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
+// Middleware to verify JWT token and attach user to req
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Token missing' });
+
+  jwt.verify(token,"Yogesh_7877" , (err, user) => {
+    if (err) return res.status(403).json({ message: 'Token invalid' });
+    req.user = user; // user contains userId and email
+    next();
+  });
+}
+
+// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
+
 // Configure nodemailer (using Gmail for example)
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'yogeshkhinchi2005@gmail.com',
-    pass: 'qprw bcan pycj vadj'
+    pass: 'qprw bcan pycj vadj' 
   },
   debug: true,
   logger: true
@@ -92,17 +112,38 @@ app.get('/api/low-stock-products', async (req, res) => {
 //   }
 // }
 
-async function sendProductEmail(action, product) {
+async function sendProductEmail(action, product , old_price = null, old_stock = null) {
+  
   const subject = `Product ${action}: ${product.company || product.name}`;
-  const text = `
+  let text = `
     Product ${action} Notification
     ------------------------------
     Company: ${product.company}
     Model: ${product.model}
     Price: ${product.price}
     Stock: ${product.stock}
-    ${action === 'deleted' ? 'This product has been removed from inventory.\n \n Full Details: ${JSON.stringify(product)' : ''}
+
+    ------------------------------------
+   }
   `;
+  if (old_price !== null && old_stock !== null) {
+    text = `
+    Product ${action} Notification
+    ------------------------------
+    Company: ${product.company}
+    Model: ${product.model}
+    Price: ${product.price}
+    Stock: ${product.stock}
+    ------------------------------------
+    
+    Data before update : 
+    Old Price: ${old_price}
+    Old Stock: ${old_stock}
+
+    ------------------------------------
+   }
+    `;
+  }
 
   const msg = {
     to:'yogeshkhinchi2005@gmail.com', // Replace with your recipient
@@ -122,6 +163,43 @@ async function sendProductEmail(action, product) {
     }
   }
 }
+
+
+async function sendDeleteEmail(action, product) {
+  
+  const subject = `Product ${action}: ${product.company || product.name}`;
+  let text2 = `
+    Product ${action} Delete Notification
+    ------------------------------
+    Company: ${product.company}
+    Model: ${product.model}
+    Details: ${product.details}
+    Price: ${product.price}
+    Stock: ${product.stock}
+
+    ------------------------------------
+    'This product has been removed from inventory.\n \n' Contact your admin for further details .}
+  `;
+  
+  const msg = {
+    to:'yogeshkhinchi2005@gmail.com', // Replace with your recipient
+    from: 'yogeshkhinchi03@gmail.com', // Use your verified sender email
+    subject: subject,
+    text: text2
+    // You can also use 'html' for formatted emails
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Email sent for DELETE action`);
+  } catch (error) {
+    console.error(`Error sending DELETE email:`, error);
+    if (error.response) {
+      console.error(error.response.body);
+    }
+  }
+}
+
 
 
 // wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
@@ -215,8 +293,8 @@ app.post('/signup', async (req, res) => {
       email
     });
     await user.save();
-    const token = jwt.sign({ shopname, ownername, email }, Private_key);
-    res.cookie("token", token);
+    // const token = jwt.sign({ shopname, ownername, email }, Private_key);
+    // res.cookie("token", token);
     res.status(201).json(user);
   } catch (err) {
     console.log("Signup Error:", err);
@@ -240,17 +318,25 @@ app.post('/Login', async (req, res) => {
       if (!isMatch) {
         return res.status(401).json({ error: "invalid username or password" });
       }else {
-         res.send(user);
+        //  res.send(user);
          console.log("yeeeaah , you loged in :)");
       }
      
     });
+    // Create JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      "Yogesh_7877",
+      { expiresIn: '1h' }
+    );
+    res.status(201);
+    res.json({token});
   } catch (err) {
     console.log(err);
-    res.status(401).json({ err: err.message });
+    alert(err);
+    res.status(401).json({ message: "Invalid credentials"});
   }
 });
-
 
 // app.get('/user',  async (req, res) => {
 //   try {
@@ -267,7 +353,7 @@ app.post('/Login', async (req, res) => {
 
 
 
-app.post('/products', async (req, res) => {
+app.post('/products', authenticateToken, async (req, res) => {
   try {
     console.log('Received data:', req.body);
     
@@ -281,6 +367,7 @@ app.post('/products', async (req, res) => {
       details,
       price: Number(price) || 0,
       stock: Number(stock) || 0,
+      owner: req.user.userId // <--- THIS IS IMPORTANT!
     });
     await product.save();
     await sendProductEmail('added', product);
@@ -298,9 +385,9 @@ app.post('/products', async (req, res) => {
 
 
 // -------------------- Get All Products --------------------
-app.get('/product', async (req, res) => {
+app.get('/product', authenticateToken,async (req, res) => {
   try {
-    const products = await Products.find();
+    const products = await Products.find({ owner: req.user.userId });
     res.status(200).json(products);
   } catch (err) {
     console.log("Fetch Error:", err);
@@ -310,7 +397,7 @@ app.get('/product', async (req, res) => {
 
 // -------------------- Update Product by Type --------------------
 // Add this PUT route to your backend
-app.put('/products/:id', async (req, res) => {
+app.put('/products/:id',  authenticateToken ,async (req, res) => {
   try {
     const { id } = req.params;
     const { company, model, details, price, stock } = req.body;
@@ -319,6 +406,17 @@ app.put('/products/:id', async (req, res) => {
     if (!company || !model || !details || price === undefined || stock === undefined) {
       return res.status(400).json({ error: 'All fields are required' });
     }
+    //new code
+    const product = await Products.findById(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+     if (product.owner.toString() !== req.user.userId) {
+     res.status(403).json({ message: 'Forbidden: You do not own this product' });
+     }
+
+    // data before update : 
+    let oldProduct = await Products.findById(req.params.id);
+    let old_price = oldProduct.price;
+    let old_stock = oldProduct.stock;    
     
     // Update the product
     const updatedProduct = await Products.findByIdAndUpdate(
@@ -336,7 +434,8 @@ app.put('/products/:id', async (req, res) => {
     });
   }
      if (updatedProduct) {
-    await sendProductEmail('updated', updatedProduct);
+    await sendProductEmail('updated', updatedProduct, old_price, old_stock);
+
   }
     
     if (!updatedProduct) {
@@ -351,18 +450,28 @@ app.put('/products/:id', async (req, res) => {
 });
 
 // -------------------- Delete Product by Type --------------------
-app.delete('/products/:id', async (req, res) => {
+app.delete('/products/:id', authenticateToken , async (req, res) => {
   try {
     const { id } = req.params;
+
+    //new code
+    const product = await Products.findById(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+     if (product.owner.toString() !== req.user.userId) {
+     res.status(403).json({ message: 'Forbidden: You do not own this product' });
+     }
     const deletedProduct = await Products.findByIdAndDelete(id);
-    if (deletedProduct) {
-    await sendProductEmail('deleted', deletedProduct);
-  }
+ 
     if (!deletedProduct) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    
-    res.json({ message: 'Product deleted successfully' });
+
+    if (deletedProduct) {
+    await sendDeleteEmail('deleted', deletedProduct);
+  }
+  res.json({ message: 'Product deleted successfully' });
+
   } catch (error) {
     res.status(400).json({ error: 'Failed to delete product' });
   }

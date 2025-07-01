@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <title>All Products</title>
   <style>
-     /* Modern Color Scheme */
-    :root {
+     :root {
       --primary: #4361ee;
       --secondary: #3f37c9;
       --accent: #4cc9f0;
@@ -14,24 +13,114 @@
       --success: #4ade80;
       --danger: #f87171;
       --card-bg: #ffffff;
+      --secondary-blue: #3f37c9;
       --transition: all 0.3s ease;
     }
+
+    .main-navbar {
+  width: 100%;
+  background: transparent;
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.main-navbar ul {
+  display: flex;
+  gap: 2.2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-navbar li {
+  position: relative;
+}
+
+.main-navbar span{
+  font-weight: 800;
+  font-size: x-large;
+  color : rgb(13, 129, 201)
+}
+.main-navbar span:hover{
+  color: var(--secondary-blue) !important;
+  transform: scale(1.05);
+}
+.main-navbar a {
+  font-size: 1.13rem;
+  font-weight: 600;
+  color: #3d5a80;
+  text-decoration: none;
+  padding: 0.3em 0.1em;
+  transition: color 0.25s cubic-bezier(.4,2,.6,1), font-weight 0.18s;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 0.02em;
+}
+
+.main-navbar a::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0; bottom: -4px;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #3d5a80 0%, #007ea7 100%);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.32s cubic-bezier(.4,2,.6,1);
+  transform-origin: left;
+  opacity: 0.9;
+}
+
+.main-navbar a:hover,
+.main-navbar a:focus {
+  color: #007ea7;
+  font-weight: 700;
+}
+
+.main-navbar a:hover::after,
+.main-navbar a:focus::after {
+  transform: scaleX(1);
+}
+
+.main-navbar a:active {
+  color: #e63946;
+}
+
+@media (max-width: 700px) {
+  .main-navbar ul {
+    gap: 1.1rem;
+    flex-wrap: wrap;
+  }
+  .main-navbar {
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+  }
+  .main-navbar a {
+    font-size: 1rem;
+  }
+}
+
+     /* Modern Color Scheme */
+   
 
     /* Base Styles */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      user-select: none;
     }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      background: linear-gradient(135deg, #d7e9e9 0%, #c5dbdb 100%);
       color: var(--dark);
       line-height: 1.6;
       min-height: 100vh;
       padding: 2rem;
-      user-select: none;
     }
 
     h1 {
@@ -275,9 +364,74 @@ h1 {
     font-size: 1.05rem;
   }
 }
+
+
+/* alert box css  */
+/* Popup Overlay */
+.popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  transition: opacity 0.3s;
+}
+
+/* Popup Box */
+.popup-box {
+  display: none;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(61,90,128,0.25);
+  padding: 2rem 2.5rem;
+  z-index: 1000;
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  animation: popupIn 0.4s cubic-bezier(.4,2,.6,1) forwards;
+}
+
+@keyframes popupIn {
+  from { opacity: 0; transform: translate(-50%, -60%) scale(0.85);}
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1);}
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px; right: 16px;
+  font-size: 1.5rem;
+  color: #3d5a80;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+.popup-close:hover {
+  color: #007ea7;
+}
+
+#popup-message {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: #003366;
+}
+
   </style>
 </head>
 <body>
+<nav class="main-navbar">
+  <ul>
+    <span>🏪 EcommercePro</span>
+    <li><a href="ecommerce.html">🛒 Add Product</a></li>
+    <li><a href="#">👤 Profile</a></li>
+    <li><a href="support.html">📞 Support</a></li>
+  </ul>
+</nav>
+
+
+
   <h1>All Products</h1>
   <div id="products-container"></div>
 
@@ -285,10 +439,19 @@ h1 {
    <div id="stock-alerts"></div>
 
    <div class="sticky-btn-bar">
-  <button class="btn" onclick="window.location=`https://ecommerce-bomr.onrender.com/inventory/csv`">Download CSV Report</button>
-  <button class="btn" onclick="window.location=`https://ecommerce-bomr.onrender.com/inventory/excel` ">Download Excel Report</button>
-  <button class="btn" onclick="window.location=`https://ecommerce-bomr.onrender.com/download/inventory/pdf`">Download PDF Report</button>
+  <button class="btn" onclick="window.location=`http://localhost:4000/download/inventory/csv`">Download CSV Report</button>
+  <button class="btn" onclick="window.location=`http://localhost:4000/download/inventory/excel` ">Download Excel Report</button>
+  <button class="btn" onclick="window.location=`http://localhost:4000/download/inventory/pdf`">Download PDF Report</button>
 </div>
+
+<!-- Popup Overlay and Box -->
+<div id="stock-popup-overlay" class="popup-overlay"></div>
+<div id="stock-popup" class="popup-box">
+  <span id="close-popup" class="popup-close">&times;</span>
+  <h2>Low Stock Alert!</h2>
+  <div id="popup-message"></div>
+</div>
+
 
   <script>
     // Utility function to safely display numbers or fallback
@@ -297,10 +460,22 @@ h1 {
     }
 
     let productsData = [];
+    const token = localStorage.getItem('token');
 
-    fetch('https://ecommerce-bomr.onrender.com/product')
-      .then(res => res.json())
-      .then(products => {
+fetch('https://ecommerce-bomr.onrender.com/product', {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+})
+.then(res => {
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error('Unauthorized: Please login first.');
+    }
+    throw new Error('Failed to fetch products');
+  }
+  return res.json();
+}).then(products => {
         productsData = products; // Save all products for later use
         const container = document.getElementById('products-container');
         container.innerHTML = products.map(product => {
@@ -347,23 +522,36 @@ h1 {
 
       if (event.target.classList.contains('delete-btn')) {
         if (confirm("Are you sure you want to delete this product?")) {
+
+            const token = localStorage.getItem('token'); // Get JWT from storage
+              if (!token) {
+                 alert('Please login first');
+                  window.location.href = 'login.html'; // Redirect to login
+                  return;
+          }
           fetch(`https://ecommerce-bomr.onrender.com/products/${productId}`, {
-            method: 'DELETE'
-          })
+            method: 'DELETE' ,
+            headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
           .then(res => {
             if (res.ok) {
               // Animate removal
               card.style.transform = 'scale(0.9)';
               card.style.opacity = '0';
-              setTimeout(() => card.remove(), 300);
+              setTimeout(() => card.remove(), 400);
             } else {
-              alert('Failed to delete product.');
+              console.log('Failed to delete product.');
+              
             }
           });
         }
       }
 
       if (event.target.classList.contains('update-btn')) {
+       
+
         // Get current values
         const priceElem = card.querySelector('p:nth-child(4)');
         const stockElem = card.querySelector('p:nth-child(5)');
@@ -373,11 +561,15 @@ h1 {
         const newPrice = prompt('Enter new price:', currentPrice);
         const newStock = prompt('Enter new stock:', currentStock);
 
+              
+
         if (newPrice && newStock && !isNaN(Number(newPrice)) && !isNaN(Number(newStock))) {
+            const token = localStorage.getItem('token'); // Or your storage method 
           fetch(`https://ecommerce-bomr.onrender.com/products/${productId}`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json' ,
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ 
               company: product.company,
@@ -414,18 +606,39 @@ h1 {
     });
 
 
-      fetch('/api/low-stock-products')
+// Example: Use this after fetching low-stock products from your backend
+fetch('http://localhost:4000/api/low-stock-products')
   .then(res => res.json())
   .then(products => {
-    if (products.length === 0) return;
-    const alertDiv = document.getElementById('stock-alerts');
-    products.forEach(product => {
-      const alert = document.createElement('div');
-      alert.className = 'alert alert-warning';
-      alert.textContent = `⚠️ Low stock: ${product.name} (${product.stock} left)`;
-      alertDiv.appendChild(alert);
-    });
+    if (products.length > 0) {
+      // Build a message with all low-stock products
+      let message = products.map(product =>
+        `<div>
+          <strong>${product.company || product.name} (${product.model || ''})</strong>: 
+          <span style="color:#e63946;font-weight:bold;">${product.stock} left!</span>
+        </div>`
+      ).join('');
+      showStockPopup(message);
+    }
   });
+
+// Popup logic
+function showStockPopup(message) {
+  document.getElementById('popup-message').innerHTML = message;
+  document.getElementById('stock-popup-overlay').style.display = 'block';
+  document.getElementById('stock-popup').style.display = 'block';
+}
+
+// Close popup events
+document.getElementById('close-popup').onclick = closeStockPopup;
+document.getElementById('stock-popup-overlay').onclick = closeStockPopup;
+
+function closeStockPopup() {
+  document.getElementById('stock-popup').style.display = 'none';
+  document.getElementById('stock-popup-overlay').style.display = 'none';
+}
+
   </script>
 </body>
 </html>
+
