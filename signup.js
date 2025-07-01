@@ -11,6 +11,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
   const ownername = document.querySelector("#ownername").value;
   const password = document.querySelector("#password").value;
   const email = document.querySelector("#email").value; // Add an age input in your HTML
+
  
 if (shopname === "" || ownername === "" || password === "" || email === "") {
   alert("Please enter your name, email , age, and password");

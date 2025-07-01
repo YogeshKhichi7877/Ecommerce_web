@@ -3,6 +3,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
    // Show loading and disable button
   document.getElementById('loading').classList.remove('hidden');
+  document.getElementsByClassName('submit').disabled = true;
   document.getElementById('message').classList.add('hidden');
 
   // your fetch code here
@@ -14,10 +15,21 @@ const password = document.querySelector("#password").value;
       localStorage.setItem('token', token);
     }
 
+    function getToken() {
+      return localStorage.getItem('token');
+    }
+
+    function clearToken() {
+      localStorage.removeItem('token');
+    }
 
 if (ownername === "" || password === "") {
-alert("please fill all details");
-  
+      document.getElementById('message').textContent = "Please enter your name and password";
+    document.getElementById('message').className = "message error";
+    document.getElementById('message').classList.remove('hidden');
+    document.getElementById('loading').classList.add('hidden');
+    document.querySelector('.submit').disabled = false;
+    return;
 } else {
 
   try {
@@ -31,7 +43,7 @@ alert("please fill all details");
   });
   const data = await response.json(); // If the response is JSON
   if (response.ok && data.token) {
- 
+    //  setToken(data.token);
     // Store the JWT token in localStorage
       localStorage.setItem('token', data.token);
       
@@ -54,21 +66,20 @@ alert("please fill all details");
       message.textContent = data.error || "Error occured , please try again later ";
       message.className = 'message error';
       message.classList.remove('hidden');
-      // alert(data.error || data.message );
-      alert(data.token);
+    alert(data.error);
 }
   }
   catch (error) {
     // Show error message
-    console.log("error is :" , error);
     const message = document.getElementById('message');
     message.textContent = "An error occurred. Please try again.";
     message.className = 'message error';
     message.classList.remove('hidden');
+    console.log(error);
   } finally {
     // Hide loading and re-enable button
     document.getElementById('loading').classList.add('hidden');
-    // document.getElementById('sub').disabled = false;
+    document.getElementById('sub').disabled = false;
     // Hide message after 3 seconds
     setTimeout(() => {
       document.getElementById('message').classList.add('hidden');
