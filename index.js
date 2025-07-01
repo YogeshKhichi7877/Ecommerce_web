@@ -54,12 +54,25 @@ if (ownername === "" || password === "") {
       message.className = 'message success';
       message.classList.remove('hidden');
 
-     // Redirect to main site after a short delay
+      // Show the token in the console for debugging
+      console.log("JWT Token generated:", data.token);
+      // Optionally, show the token on the page (for debug only, remove in production)
+      let tokenMsg = document.getElementById('token-message');
+      if (!tokenMsg) {
+        tokenMsg = document.createElement('div');
+        tokenMsg.id = 'token-message';
+        tokenMsg.style.wordBreak = 'break-all';
+        tokenMsg.style.marginTop = '10px';
+        document.body.appendChild(tokenMsg);
+      }
+      tokenMsg.textContent = 'JWT Token: ' + data.token;
+
+      // Redirect to main site after a short delay
       setTimeout(() => {
         window.location.href = "ecommerce.html"; // Change to your main site URL if needed
-      }, 1000);
-    console.log("login completed");
-    document.querySelector('form').reset(); // <-- CHANGE to your main site URL
+      }, 2000);
+      console.log("login completed");
+      document.querySelector('form').reset(); // <-- CHANGE to your main site URL
 } else {
     // Show error message
       const message = document.getElementById('message');

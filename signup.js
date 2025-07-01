@@ -3,7 +3,11 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
    // Show loading and disable button
   document.getElementById('loading').classList.remove('hidden');
-  document.getElementsByClassName('submit').disabled = true;
+  // Fix: getElementsByClassName returns a collection, so disable all submit buttons
+  const submitButtons = document.getElementsByClassName('submit');
+  for (let btn of submitButtons) {
+    btn.disabled = true;
+  }
   document.getElementById('message').classList.add('hidden');
 
    // your fetch code here

@@ -307,36 +307,28 @@ app.post('/signup', async (req, res) => {
 
 // -------------------- Login --------------------
 app.post('/Login', async (req, res) => {
- try {
-    // console.log('Login request:', req.body); // Debug
-    const user = await User.findOne({ password : req.body.password });
+  try {
+    // Find user by ownername (not password!)
+    const user = await User.findOne({ ownername: req.body.ownername });
     if (!user) {
-      return res.status(401).json({ error: "invalid ownername or password" });
+      return res.status(401).json({ error: "Invalid ownername or password" });
     }
-    bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
-      if (err) {
-        console.log("bcrypt error:", err);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-      if (!isMatch) {
-        return res.status(401).json({ error: "invalid username or password" });
-      }else {
-        //  res.send(user);
-         console.log("yeeeaah , you loged in :)");
-      }
-    });
+    // Compare password using bcrypt
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid ownername or password" });
+    }
     // Create JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       "Yogesh_7877",
       { expiresIn: '24h' }
     );
-    // res.cookie("token", token);
-   res.status(201).json({ token });
+    console.log("Login successful, token generated:", token);
+    res.status(201).json({ token });
   } catch (err) {
     console.log(err);
-    alert(err);
-    res.status(401).json({ message: "Invalid credentials"});
+    res.status(401).json({ message: "Invalid credentials" });
   }
 });
 
